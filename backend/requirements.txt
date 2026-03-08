@@ -1,0 +1,5 @@
+Flask
+paho-mqtt
+SQLAlchemy
+python-dotenv
+Gunicorn
