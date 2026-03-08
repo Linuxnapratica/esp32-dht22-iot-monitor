@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Node.js
+node_modules/
+*.log
+
+# IDE specific
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
