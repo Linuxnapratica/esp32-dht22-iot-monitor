@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 DHT22 IOT Monitor</title>
+    <!-- Import Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #dashboard { width: 50%; margin: auto; }
+        canvas { max-width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="dashboard">
+        <h1>Current Temperature and Humidity</h1>
+        <p>Temperature: <span id="temperature">--</span> °C</p>
+        <p>Humidity: <span id="humidity">--</span> %</p>
+        <canvas id="tempChart"></canvas>
+        <canvas id="humidityChart"></canvas>
+    </div>
+    <script>
+        // Function to fetch data from the backend
+        async function fetchData() {
+            const response = await fetch('/api/data');
+            const data = await response.json();
+            updateDashboard(data);
+        }
+
+        // Function to update the dashboard
+        function updateDashboard(data) {
+            document.getElementById('temperature').textContent = data.temperature;
+            document.getElementById('humidity').textContent = data.humidity;
+            updateCharts(data);
+        }
+
+        // Function to update charts
+        function updateCharts(data) {
+            // Update the temperature chart
+            tempChart.data.labels.push(new Date().toLocaleTimeString());
+            tempChart.data.datasets[0].data.push(data.temperature);
+            tempChart.update();
+            
+            // Update the humidity chart
+            humidityChart.data.labels.push(new Date().toLocaleTimeString());
+            humidityChart.data.datasets[0].data.push(data.humidity);
+            humidityChart.update();
+        }
+
+        // Initialize charts
+        const tempChart = new Chart(document.getElementById('tempChart'), {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Temperature', data: [], borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 }] },
+            options: { responsive: true }
+        });
+
+        const humidityChart = new Chart(document.getElementById('humidityChart'), {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Humidity', data: [], borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 }] },
+            options: { responsive: true }
+        });
+
+        // Fetch data every second
+        setInterval(fetchData, 1000);
+    </script>
+</body>
+</html>
